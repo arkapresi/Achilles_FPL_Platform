@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="weekly-brand">
+  <div class="weekly-brand-mark">🏆</div>
+  <div>
+    <h1>ACHILLES 8.0</h1>
+    <div class="weekly-season">{{ s.season }}</div>
+  </div>
+</section>
+
+<div class="weekly-meta">{{ league_name }} • {{ participants }} managers</div>
+
+<section class="hero weekly-hero">
+  <p class="eyebrow">ACHILLES 8.0 • WEEKLY UPDATE</p>
+  <h1>Gameweek {{ selected_gw }} Update</h1>
+  <p>Automated weekly results and leaderboard</p>
+</section>
+
+{% if error %}<div class="alert">Unable to build this update: {{ error }}</div>{% endif %}
+
+<section class="panel">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">GAMEWEEK WINNERS</p>
+      <h2>Top 5</h2>
+      <span>Ranked by Net Score = GW Score − Transfer Cost</span>
+    </div>
+    <form method="get">
+      <select name="gw" onchange="this.form.submit()">
+        {% for g in available_gws %}
+          <option value="{{ g }}" {% if g == selected_gw %}selected{% endif %}>GW{{ g }}</option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
+
+  {% if gw_rows %}
+  <div class="table-wrap"><table>
+    <thead>
+      <tr>
+        <th>POSITION</th>
+        <th>MANAGER</th>
+        <th>NET SCORE</th>
+        <th>TIE-BREAKER USED</th>
+        <th>PRIZE</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in gw_rows %}
+      <tr>
+        <td>{% if r.rank == 1 %}🥇{% elif r.rank == 2 %}🥈{% elif r.rank == 3 %}🥉{% else %}{{ r.rank }}{% endif %}</td>
+        <td><b>{{ r.player_name }}</b></td>
+        <td><b>{{ r.net_score }}</b></td>
+        <td>{{ r.tie_break_reason or '—' }}</td>
+        <td><b>₹{{ r.prize }}</b></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table></div>
+  {% else %}
+    <p>No completed Gameweek data available.</p>
+  {% endif %}
+</section>
+
+<section class="grid">
+  <div class="tile"><span>👥</span><b>Participants</b><strong>{{ participants }}</strong></div>
+  <div class="tile"><span>🔥</span><b>Highest Score</b><strong>{% if highest_score is not none %}{{ highest_score }}{% else %}—{% endif %}</strong><span>{{ highest_manager or '—' }}</span></div>
+  <div class="tile"><span>📉</span><b>Lowest Score</b><strong>{% if lowest_score is not none %}{{ lowest_score }}{% else %}—{% endif %}</strong><span>{{ lowest_manager or '—' }}</span></div>
+  <div class="tile"><span>📊</span><b>Average Score</b><strong>{% if average_score is not none %}{{ average_score }}{% else %}—{% endif %}</strong></div>
+</section>
+
+<section class="panel">
+  <div class="section-head">
+    <div><p class="eyebrow">LAST MAN STANDING</p><h2>GW{{ selected_gw }}</h2></div>
+  </div>
+
+  {% if lms_row %}
+    <div class="grid lms-summary-grid">
+      <div class="tile"><b>Eliminated</b><strong>{{ lms_row.player_name or '—' }}</strong></div>
+      <div class="tile"><b>Net Score</b><strong>{{ lms_row.net_score if lms_row.net_score is not none else lms_row.gw_points }}</strong></div>
+      <div class="tile"><b>GW Position</b><strong>{{ lms_row.position or '—' }}</strong></div>
+      <div class="tile"><b>Reason</b><strong>{{ lms_row.reason or 'Lowest eligible score' }}</strong></div>
+    </div>
+    <p class="lms-note">LMS elimination recorded for GW{{ selected_gw }}.</p>
+  {% elif not lms_started %}
+    <p>{{ lms_message or 'LMS has not started.' }}</p>
+  {% else %}
+    <p>No LMS elimination recorded for this Gameweek.</p>
+  {% endif %}
+</section>
+
+<section class="panel">
+  <div class="section-head">
+    <div><p class="eyebrow">NEXT GAMEWEEK</p><h2>{% if next_gw %}GW{{ next_gw }}{% else %}Season complete{% endif %}</h2></div>
+  </div>
+  {% if next_gw %}
+    <p>European H2H fixtures will appear here automatically once the European fixture data is supplied.</p>
+  {% else %}
+    <p>No further Gameweeks.</p>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">{{ s.season }} • {{ current_gw_name }}</p>
+  <h1>🏆 {{ league_name }}</h1>
+  <p>Complete live standings • {{ standings|length }} managers</p>
+</section>
+{% if error %}<div class="alert">FPL API unavailable right now: {{ error }}</div>{% endif %}
+<section class="panel">
+  <div class="section-head">
+    <div><p class="eyebrow">Classic League</p><h2>All Managers</h2></div>
+    <a class="button" href="/">← Dashboard</a>
+  </div>
+  {% if standings %}
+  <div class="table-wrap">
+  <table>
+    <tr><th>Rank</th><th>Manager</th><th>Team</th><th>GW Score</th><th>Total Points</th><th>Overall Rank</th><th>Movement</th></tr>
+    {% for r in standings %}
+    <tr>
+      <td><b>{{ r.rank }}</b></td>
+      <td><a class="manager-link" href="/manager/{{ r.entry }}">{{ r.player_name }}</a></td>
+      <td>{{ r.entry_name }}</td>
+      <td>{{ r.event_total }}</td>
+      <td>{{ r.total }}</td>
+      <td>{{ r.overall_rank }}</td>
+      <td>{% if r.rank_movement > 0 %}<span class="up">▲ {{ r.rank_movement }}</span>{% elif r.rank_movement < 0 %}<span class="down">▼ {{ -r.rank_movement }}</span>{% else %}—{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  </div>
+  {% else %}<p>No FPL standings available.</p>{% endif %}
+</section>
+{% endblock %}

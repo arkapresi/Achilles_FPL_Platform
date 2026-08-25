@@ -1,0 +1,334 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if error %}
+
+<section class="hero">
+    <p class="eyebrow">MANAGER PROFILE</p>
+    <h1>Unable to load manager</h1>
+
+    <div class="alert">
+        {{ error }}
+    </div>
+
+    <a class="button" href="/league">← Back to League</a>
+</section>
+
+{% elif profile %}
+
+{% set info = profile.manager_info %}
+{% set h = profile.selected_history %}
+
+<section class="hero">
+    <p class="eyebrow">MANAGER PROFILE • GW{{ event }}</p>
+
+    <h1>👤 {{ info.player_first_name }} {{ info.player_last_name }}</h1>
+
+    <p>
+        {{ info.name or info.entry_name or "FPL Manager" }}
+    </p>
+</section>
+
+
+<section class="metric-grid">
+
+    <div class="metric-card">
+        <span>GW Points</span>
+        <strong>{{ profile.gw_total }}</strong>
+    </div>
+
+    <div class="metric-card">
+        <span>Overall Points</span>
+        <strong>{{ profile.overall_points }}</strong>
+    </div>
+
+    <div class="metric-card">
+        <span>Overall Rank</span>
+        <strong>
+            {{ "{:,}".format(profile.overall_rank)
+               if profile.overall_rank else "—" }}
+        </strong>
+    </div>
+
+    <div class="metric-card">
+        <span>League Rank</span>
+        <strong>{{ profile.manager_rank or "—" }}</strong>
+    </div>
+
+    <div class="metric-card">
+        <span>Transfers</span>
+        <strong>{{ profile.transfers }}</strong>
+    </div>
+
+    <div class="metric-card">
+        <span>Transfer Cost</span>
+        <strong>{{ profile.transfer_cost }}</strong>
+    </div>
+
+</section>
+
+
+<section class="panel">
+
+    <div class="section-head">
+
+        <div>
+            <p class="eyebrow">GAMEWEEK</p>
+            <h2>GW{{ event }} Squad</h2>
+        </div>
+
+        <a class="button" href="/league">
+            ← League
+        </a>
+
+    </div>
+
+    <div style="margin-top: 18px;">
+
+        <label for="gw-select">
+            <b>Select Gameweek</b>
+        </label>
+
+        <select
+            id="gw-select"
+            onchange="if(this.value) window.location.href=this.value;"
+            style="
+                margin-left: 12px;
+                padding: 8px 12px;
+                border-radius: 8px;
+                border: 1px solid #d9dce3;
+                background: white;
+                font-size: 14px;
+            "
+        >
+
+            {% for row in profile.history %}
+
+                <option
+                    value="/manager/{{ entry_id }}?gw={{ row.event }}"
+                    {% if row.event == event %}selected{% endif %}
+                >
+                    GW{{ row.event }}
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+</section>
+
+
+<section class="panel">
+
+    <div class="section-head">
+
+        <div>
+            <p class="eyebrow">STARTING XI</p>
+            <h2>Playing 11</h2>
+        </div>
+
+    </div>
+
+    <div class="table-wrap">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Player</th>
+                    <th>Pos</th>
+                    <th>Captain</th>
+                    <th>Multiplier</th>
+                    <th>GW Points</th>
+                    <th>Effective</th>
+                    <th>Minutes</th>
+                    <th>Goals</th>
+                    <th>Assists</th>
+                    <th>CS</th>
+                    <th>Bonus</th>
+                    <th>BPS</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            {% for p in profile.starting %}
+
+                <tr>
+
+                    <td>
+                        <b>{{ p.display_name }}</b>
+
+                        {% if p.captain %}
+                            <span class="badge">C</span>
+                        {% elif p.vice_captain %}
+                            <span class="badge">VC</span>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ p.position }}</td>
+
+                    <td>
+                        {% if p.captain %}
+                            C
+                        {% elif p.vice_captain %}
+                            VC
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+
+                    <td>{{ p.multiplier }}</td>
+
+                    <td><b>{{ p.gw_points }}</b></td>
+
+                    <td><b>{{ p.effective_points }}</b></td>
+
+                    <td>{{ p.stats.minutes }}</td>
+                    <td>{{ p.stats.goals_scored }}</td>
+                    <td>{{ p.stats.assists }}</td>
+                    <td>{{ p.stats.clean_sheets }}</td>
+                    <td>{{ p.stats.bonus }}</td>
+                    <td>{{ p.stats.bps }}</td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+<section class="panel">
+
+    <div class="section-head">
+
+        <div>
+            <p class="eyebrow">BENCH</p>
+            <h2>Substitutes</h2>
+        </div>
+
+    </div>
+
+    <div class="table-wrap">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Player</th>
+                    <th>Pos</th>
+                    <th>GW Points</th>
+                    <th>Effective</th>
+                    <th>Minutes</th>
+                    <th>Goals</th>
+                    <th>Assists</th>
+                    <th>CS</th>
+                    <th>Bonus</th>
+                    <th>BPS</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            {% for p in profile.bench %}
+
+                <tr>
+
+                    <td><b>{{ p.display_name }}</b></td>
+                    <td>{{ p.position }}</td>
+                    <td><b>{{ p.gw_points }}</b></td>
+                    <td>{{ p.effective_points }}</td>
+                    <td>{{ p.stats.minutes }}</td>
+                    <td>{{ p.stats.goals_scored }}</td>
+                    <td>{{ p.stats.assists }}</td>
+                    <td>{{ p.stats.clean_sheets }}</td>
+                    <td>{{ p.stats.bonus }}</td>
+                    <td>{{ p.stats.bps }}</td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+<section class="panel">
+
+    <div class="section-head">
+
+        <div>
+            <p class="eyebrow">GAMEWEEK HISTORY</p>
+            <h2>Manager Performance</h2>
+        </div>
+
+    </div>
+
+    <div class="table-wrap">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>GW</th>
+                    <th>GW Points</th>
+                    <th>Overall Points</th>
+                    <th>Overall Rank</th>
+                    <th>Transfers</th>
+                    <th>Transfer Cost</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            {% for row in profile.history %}
+
+                <tr>
+
+                    <td>
+                        <a href="/manager/{{ entry_id }}?gw={{ row.event }}">
+                            <b>GW{{ row.event }}</b>
+                        </a>
+                    </td>
+
+                    <td><b>{{ row.points }}</b></td>
+
+                    <td>{{ row.total_points }}</td>
+
+                    <td>
+                        {{ "{:,}".format(row.overall_rank)
+                           if row.overall_rank else "—" }}
+                    </td>
+
+                    <td>{{ row.event_transfers }}</td>
+                    <td>{{ row.event_transfers_cost }}</td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+{% endblock %}
