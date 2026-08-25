@@ -19,7 +19,7 @@ SETTINGS = ROOT / "data" / "settings.json"
 LMS_CACHE_FILE = ROOT / "data" / "lms_cache.json"
 
 app = FastAPI(title="Achilles FPL Platform")
-# app.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
+app.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
 templates = Jinja2Templates(directory=str(ROOT / "templates"))
 
 _cache: Dict[str, Any] = {}
