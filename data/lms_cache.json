@@ -1,0 +1,226 @@
+{
+  "current_gw": 1,
+  "rows": [
+    {
+      "gw": 1,
+      "entry": 8306680,
+      "player_name": "Arindam Daschowdhury",
+      "entry_name": "ADC_26-27",
+      "position": 1,
+      "gw_points": 36,
+      "net_score": 36,
+      "reason": "Lowest in the GW",
+      "goals": 1,
+      "assists": 2,
+      "clean_sheets": 3,
+      "bonus": 2,
+      "yellow_cards": 1,
+      "red_cards": 0,
+      "captain_points": 4,
+      "vice_captain_points": 1,
+      "transfer_cost": 0,
+      "survivors_after": 39
+    }
+  ],
+  "survivors": [
+    {
+      "entry": 12842,
+      "player_name": "Aadrik Das",
+      "entry_name": "The Dark Horses"
+    },
+    {
+      "entry": 7989473,
+      "player_name": "Abhijit Mazumder",
+      "entry_name": "red_road"
+    },
+    {
+      "entry": 4554906,
+      "player_name": "Abhik Ray",
+      "entry_name": "GUIMARICE"
+    },
+    {
+      "entry": 2608717,
+      "player_name": "Agnibho Majumder",
+      "entry_name": "Forever Diogo!"
+    },
+    {
+      "entry": 3296909,
+      "player_name": "Anirban Ghosh",
+      "entry_name": "East Bengal 91"
+    },
+    {
+      "entry": 2341730,
+      "player_name": "Aniruddhya Sur",
+      "entry_name": "AnisX!"
+    },
+    {
+      "entry": 6247401,
+      "player_name": "Ankit Deb",
+      "entry_name": "Ankit's Team"
+    },
+    {
+      "entry": 1683047,
+      "player_name": "Ankit Dutta Gupta",
+      "entry_name": "DG_Again"
+    },
+    {
+      "entry": 1026973,
+      "player_name": "Aranya Sarkar",
+      "entry_name": "AranyaS"
+    },
+    {
+      "entry": 528000,
+      "player_name": "Aritra Basu",
+      "entry_name": "AB11"
+    },
+    {
+      "entry": 174937,
+      "player_name": "Arkapratim Ghosh",
+      "entry_name": "Shob Se\u0161ko-re debo!"
+    },
+    {
+      "entry": 214829,
+      "player_name": "Aryan Das",
+      "entry_name": "Kareem Kulilah"
+    },
+    {
+      "entry": 6120805,
+      "player_name": "atreya biswas",
+      "entry_name": "AtasXI"
+    },
+    {
+      "entry": 2747041,
+      "player_name": "Avishek Acharya",
+      "entry_name": "Goal Diggers"
+    },
+    {
+      "entry": 1149561,
+      "player_name": "Bijananda Chabungbam",
+      "entry_name": "Up The Ch3l$"
+    },
+    {
+      "entry": 7389,
+      "player_name": "Debanjan Dutta",
+      "entry_name": "Bench Warmers FC"
+    },
+    {
+      "entry": 4570656,
+      "player_name": "Deepak Ramesh",
+      "entry_name": "Stretford Army"
+    },
+    {
+      "entry": 83141,
+      "player_name": "Nishan Chakraborty",
+      "entry_name": "chinicius"
+    },
+    {
+      "entry": 8866782,
+      "player_name": "Prithwish Adhikari",
+      "entry_name": "ChodonThapon"
+    },
+    {
+      "entry": 1787799,
+      "player_name": "Purbayan Gupta",
+      "entry_name": "Rajhaka10"
+    },
+    {
+      "entry": 3964463,
+      "player_name": "Rajiv Xavier Rozario",
+      "entry_name": "Inazuma 11"
+    },
+    {
+      "entry": 2171073,
+      "player_name": "Ritam Bhattacharya",
+      "entry_name": "Rice Tikka Mo Salah"
+    },
+    {
+      "entry": 4599072,
+      "player_name": "Rohan Ghosh",
+      "entry_name": "56inchKaChhotaBandar"
+    },
+    {
+      "entry": 665597,
+      "player_name": "Rohit Majumder",
+      "entry_name": "Demolition XI"
+    },
+    {
+      "entry": 1492432,
+      "player_name": "SAGNIK HALDER",
+      "entry_name": "SAGNIK's Team"
+    },
+    {
+      "entry": 8375376,
+      "player_name": "Sambit Dasgupta",
+      "entry_name": "Sambit's Messi Magic"
+    },
+    {
+      "entry": 7590632,
+      "player_name": "Sanjeev Srinivasan",
+      "entry_name": "Sanjeev's Team"
+    },
+    {
+      "entry": 3466902,
+      "player_name": "Sanmoy Talukdar",
+      "entry_name": "Carrickterless XI"
+    },
+    {
+      "entry": 6312553,
+      "player_name": "Sayan Saha",
+      "entry_name": "Data Before Drama"
+    },
+    {
+      "entry": 2049270,
+      "player_name": "sid ghosh",
+      "entry_name": "sid's outlanders"
+    },
+    {
+      "entry": 617032,
+      "player_name": "Siddharth Singh",
+      "entry_name": "Missalah"
+    },
+    {
+      "entry": 7314280,
+      "player_name": "Soham Chakraborty",
+      "entry_name": "JintiChor 11"
+    },
+    {
+      "entry": 7527696,
+      "player_name": "soumodeep sinha roy",
+      "entry_name": "SSRStark"
+    },
+    {
+      "entry": 7593823,
+      "player_name": "Subhobrato Ghosh",
+      "entry_name": "Fight11"
+    },
+    {
+      "entry": 18642,
+      "player_name": "Subhrajyoti Roy",
+      "entry_name": "H0p3|e$$ XI"
+    },
+    {
+      "entry": 6214452,
+      "player_name": "Sudipto Dey",
+      "entry_name": "Dre@mBigFC"
+    },
+    {
+      "entry": 2793318,
+      "player_name": "Swagato Mukherjee",
+      "entry_name": "Mecchi"
+    },
+    {
+      "entry": 3121061,
+      "player_name": "Tathagata  Ghosh",
+      "entry_name": "Dingbat eleven plus"
+    },
+    {
+      "entry": 445142,
+      "player_name": "Utsav Chanda",
+      "entry_name": "Chuskondi"
+    }
+  ],
+  "started": true,
+  "message": "LMS updated through GW1.",
+  "current_finished": true,
+  "manually_ended_gw": null
+}

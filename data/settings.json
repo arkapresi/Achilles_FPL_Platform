@@ -1,0 +1,28 @@
+{
+  "league_name": "Achilles FPL League",
+  "season": "2026/27",
+  "league_id": "516163",
+  "base_url": "https://fantasy.premierleague.com/api",
+  "expected_managers": 40,
+  "entry_fee": 1700,
+  "european_groups": {
+    "A": [],
+    "B": [],
+    "C": [],
+    "D": [],
+    "E": [],
+    "F": [],
+    "G": [],
+    "H": []
+  },
+  "competitions": {
+    "gameweek_prizes": true,
+    "last_man_standing": true,
+    "manager_of_the_month": true,
+    "champions_league": true,
+    "europa_league": true,
+    "conference_league": true,
+    "royal_rumble": false
+  },
+  "admin_notes": "Edit this file or use the Admin page. Do not edit application code for normal competition changes."
+}
