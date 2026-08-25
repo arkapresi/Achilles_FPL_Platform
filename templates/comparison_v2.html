@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">{{ s.season }} • {{ current_gw_name }}</p>
+  <h1>📊 Manager Comparison</h1>
+  <p>Compare up to 10 Achilles FPL managers for any completed or current Gameweek.</p>
+</section>
+
+{% if error %}<div class="alert">{{ error }}</div>{% endif %}
+{% if data_unavailable %}<div class="alert">{{ data_unavailable }}</div>{% endif %}
+
+<section class="panel">
+  <div class="section-head"><div><p class="eyebrow">SELECT MANAGERS</p><h2>Choose up to 10 managers</h2></div></div>
+  <form method="get" action="/competitions/comparison" id="comparison-form">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Select</th><th>Manager</th><th>Team</th><th>League Rank</th><th>GW Points</th><th>Total Points</th></tr></thead>
+        <tbody>
+        {% for r in standings %}
+          {% set rid = r.entry or r.entry_id %}
+          <tr>
+            <td><input type="checkbox" class="manager-box" value="{{ rid }}" {% if rid in selected_ids %}checked{% endif %}></td>
+            <td><b>{{ r.player_name }}</b></td><td>{{ r.entry_name }}</td><td>{{ r.rank }}</td><td>{{ r.event_total }}</td><td>{{ r.total }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div style="display:flex;gap:16px;align-items:end;flex-wrap:wrap;margin-top:16px;">
+      <div>
+        <label for="gw"><b>Gameweek</b></label>
+        <select id="gw" name="gw" style="padding:11px;border:1px solid #d8dde8;border-radius:10px;background:white;">
+          {% for event in available_gws %}<option value="{{ event }}" {% if event == selected_gw %}selected{% endif %}>GW{{ event }}</option>{% endfor %}
+        </select>
+      </div>
+      <input type="hidden" name="managers" id="manager-ids">
+      <button class="button" type="submit">Compare Selected Managers</button>
+      <span id="selection-count">{{ selected_ids|length }} / 10 selected</span>
+    </div>
+  </form>
+</section>
+
+{% if comparison_metrics %}
+<section class="panel">
+  <div class="section-head"><div><p class="eyebrow">GW{{ selected_gw }} COMPARISON</p><h2>Manager Metrics</h2></div></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>Manager</th><th>GW Points</th><th>Total Points</th><th>Overall Rank</th>
+        <th>Goals</th><th>Assists</th><th>Clean Sheets</th><th>Yellow Cards</th><th>Red Cards</th><th>Bonus Points</th><th>Captain Points</th><th>Vice-Captain Points</th>
+      </tr></thead>
+      <tbody>
+      {% for m in comparison_metrics %}
+        <tr>
+          <td><b>{{ m.player_name }}</b></td>
+          {% if m.unavailable %}<td colspan="11">Data unavailable for GW{{ selected_gw }}</td>
+          {% else %}
+          <td><b>{{ m.gw_points }}</b></td><td>{{ m.total_points }}</td><td>{{ "{:,}".format(m.overall_rank) if m.overall_rank else "—" }}</td>
+          <td>{{ m.goals }}</td><td>{{ m.assists }}</td><td>{{ m.clean_sheets }}</td><td>{{ m.yellow_cards }}</td><td>{{ m.red_cards }}</td><td>{{ m.bonus }}</td><td>{{ m.captain_points }}</td><td>{{ m.vice_captain_points }}</td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+
+{% if selected|length == 1 %}<section class="panel"><div class="alert">Select at least 2 managers if you want a side-by-side comparison.</div></section>{% endif %}
+
+<script>
+(function () {
+  const boxes = Array.from(document.querySelectorAll('.manager-box'));
+  const hidden = document.getElementById('manager-ids');
+  const count = document.getElementById('selection-count');
+  const form = document.getElementById('comparison-form');
+  function update() {
+    const checked = boxes.filter(b => b.checked);
+    if (checked.length > 10) checked[checked.length - 1].checked = false;
+    const ids = boxes.filter(b => b.checked).map(b => b.value);
+    hidden.value = ids.join(',');
+    count.textContent = ids.length + ' / 10 selected';
+    boxes.forEach(b => b.disabled = ids.length >= 10 && !b.checked);
+  }
+  boxes.forEach(b => b.addEventListener('change', update));
+  form.addEventListener('submit', function (e) {
+    update();
+    if (!hidden.value) { e.preventDefault(); alert('Please select at least one manager.'); }
+  });
+  update();
+})();
+</script>
+{% endblock %}
