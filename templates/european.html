@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">{{ s.season }} • EUROPEAN COMPETITIONS</p>
+  <h1>🏆 {{ title }}</h1>
+  {% if name == "european" %}
+    <p>European Championship group draw, group-stage standings, Gameweek schedule and qualification destinations.</p>
+  {% else %}
+    <p>Knockout phase fixtures for the {{ title }}.</p>
+  {% endif %}
+</section>
+
+{% if error %}<div class="alert">{{ error }}</div>{% endif %}
+
+{% if name == "european" %}
+<section class="panel">
+  <div class="section-head"><div>
+    <p class="eyebrow">GROUP DRAW TEMPLATE</p>
+    <h2>8 Groups • 5 Managers Each</h2>
+  </div></div>
+  <div class="grid grid-4">
+    {% for g in "ABCDEFGH" %}
+    <div class="card" style="padding:16px;">
+      <h3 style="margin-top:0;">Group {{ g }}</h3>
+      {% set members = groups.get(g, []) %}
+      {% for i in range(5) %}
+        <div style="padding:7px 0;border-bottom:1px solid #edf0f5;">
+          <b>{{ g }}{{ i+1 }}</b> —
+          {% if i < members|length and members[i] %}{{ members[i] }}{% else %}<span style="color:#8a93a3;">TBD</span>{% endif %}
+        </div>
+      {% endfor %}
+      <small style="display:block;margin-top:8px;color:#697386;">Editable draw slot — add the manager name when the pools are finalised.</small>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="panel">
+  <div class="section-head"><div><p class="eyebrow">GROUP STAGE</p><h2>Standings</h2></div></div>
+  {% for g in "ABCDEFGH" %}
+    <h3>Group {{ g }}</h3>
+    <div class="table-wrap" style="margin-bottom:22px;">
+      <table>
+        <thead><tr><th>Pos</th><th>Manager</th><th>Played</th><th>Won</th><th>Tied</th><th>Lost</th><th>Scored For</th><th>Scored Against</th><th>Points</th></tr></thead>
+        <tbody>
+        {% set table = tables.get(g, []) %}
+        {% if table %}
+          {% for r in table %}
+          <tr><td><b>{{ loop.index }}</b></td><td><b>{{ r.manager }}</b></td><td>{{ r.played }}</td><td>{{ r.won }}</td><td>{{ r.tied }}</td><td>{{ r.lost }}</td><td>{{ r.scored_for }}</td><td>{{ r.scored_against }}</td><td><b>{{ r.points }}</b></td></tr>
+          {% endfor %}
+        {% else %}
+          {% for i in range(5) %}<tr><td>{{ i+1 }}</td><td>{{ g }}{{ i+1 }} — TBD</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>{% endfor %}
+        {% endif %}
+        </tbody>
+      </table>
+    </div>
+  {% endfor %}
+  <p style="color:#697386;">Scored For/Against are the Achilles Net Score in each completed H2H Gameweek. Win = 3 points; tie = 0; loss = 0.</p>
+</section>
+
+<section class="panel">
+  <div class="section-head"><div><p class="eyebrow">GAMEWEEK SCHEDULE</p><h2>Group-stage fixtures</h2></div></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>GW</th><th>Group</th><th>Leg</th><th>Home</th><th>Home Score</th><th>Away Score</th><th>Away</th><th>Result</th></tr></thead>
+    <tbody>
+    {% if fixtures %}
+      {% for f in fixtures %}
+      <tr><td><b>GW{{ f.gw }}</b></td><td>{{ f.group }}</td><td>{{ f.leg }}{% if f.leg == 1 %}st{% else %}nd{% endif %} Leg</td><td>{{ f.home }}</td><td>{% if f.home_score is not none %}{{ f.home_score }}{% else %}—{% endif %}</td><td>{% if f.away_score is not none %}{{ f.away_score }}{% else %}—{% endif %}</td><td>{{ f.away }}</td><td>{% if not f.ready %}Awaiting GW{% elif f.home_score > f.away_score %}{{ f.home }}{% elif f.home_score < f.away_score %}{{ f.away }}{% else %}Tied{% endif %}</td></tr>
+      {% endfor %}
+    {% else %}<tr><td colspan="8">Schedule will populate after managers are added to the group template.</td></tr>{% endif %}
+    </tbody>
+  </table></div>
+  <p style="color:#697386;">Five-member groups use GW10–14 for Leg 1 and GW16–20 for Leg 2. Each group plays a full home-and-away round robin.</p>
+</section>
+
+<section class="panel">
+  <div class="section-head"><div><p class="eyebrow">QUALIFICATION</p><h2>Destination after group stage</h2></div></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Group</th><th>Position</th><th>Manager</th><th>Points</th><th>Point Difference</th><th>Destination</th></tr></thead>
+    <tbody>
+      {% if qualification %}{% for q in qualification %}<tr><td>{{ q.group }}</td><td>{{ q.position }}</td><td>{{ q.manager }}</td><td>{{ q.points }}</td><td>{{ q.diff }}</td><td><b>{{ q.destination }}</b></td></tr>{% endfor %}
+      {% else %}<tr><td colspan="6">Qualification will populate after the group draw and completed matches.</td></tr>{% endif %}
+    </tbody>
+  </table></div>
+  <p style="color:#697386;">Current setup: 1st/2nd from every group qualify for UCL; 3rd/4th qualify for Europa; 5th qualifies for Conference.</p>
+</section>
+
+{% else %}
+<section class="panel">
+  <div class="alert"><b>Knockout phase only.</b> Group-stage information is maintained under <b>European Championship</b>.</div>
+</section>
+{% endif %}
+
+{% if knockout %}
+<section class="panel">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">KNOCKOUT PHASE</p>
+      <h2>{{ title }}</h2>
+    </div>
+  </div>
+
+  {% if name == "ucl" or name == "europa" %}
+    <div class="alert"><b>{{ title }} starts at the Round of 16.</b> The 16 qualifiers are paired into 8 two-legged ties.</div>
+  {% elif name == "conference" %}
+    <div class="alert"><b>Conference League starts at the Quarter-finals.</b> The 8 qualifiers are paired into 4 two-legged ties.</div>
+  {% endif %}
+
+  {% for stage, gws, n in knockout %}
+    <div style="margin-top:28px;">
+      <div class="section-head" style="margin-bottom:12px;">
+        <div>
+          <p class="eyebrow">{{ stage|upper }}</p>
+          {% if gws|length == 2 %}
+            <h3 style="margin:0;">GW{{ gws[0] }} • First Leg &nbsp; / &nbsp; GW{{ gws[1] }} • Second Leg</h3>
+          {% else %}
+            <h3 style="margin:0;">GW{{ gws[0] }} • Final</h3>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if gws|length == 2 %}
+      <div class="grid grid-3">
+        <div class="card" style="padding:16px;">
+          <h4 style="margin-top:0;">First Leg • GW{{ gws[0] }}</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tie</th><th>Home</th><th>Score</th><th>Away</th><th>Score</th></tr></thead>
+              <tbody>
+                {% for i in range(n) %}
+                <tr><td><b>{{ i+1 }}</b></td><td>TBD</td><td>—</td><td>TBD</td><td>—</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card" style="padding:16px;">
+          <h4 style="margin-top:0;">Second Leg • GW{{ gws[1] }}</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tie</th><th>Home</th><th>Score</th><th>Away</th><th>Score</th></tr></thead>
+              <tbody>
+                {% for i in range(n) %}
+                <tr><td><b>{{ i+1 }}</b></td><td>TBD</td><td>—</td><td>TBD</td><td>—</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card" style="padding:16px;">
+          <h4 style="margin-top:0;">Overall Score</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tie</th><th>Manager A</th><th>Total</th><th>Manager B</th><th>Total</th><th>Winner</th></tr></thead>
+              <tbody>
+                {% for i in range(n) %}
+                <tr><td><b>{{ i+1 }}</b></td><td>TBD</td><td>—</td><td>TBD</td><td>—</td><td>—</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="card" style="padding:16px; max-width:900px;">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Final</th><th>Manager A</th><th>Score</th><th>Manager B</th><th>Score</th><th>Winner</th></tr></thead>
+            <tbody><tr><td><b>Final</b></td><td>TBD</td><td>—</td><td>TBD</td><td>—</td><td>—</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  {% endfor %}
+
+  <p style="color:#697386;margin-top:24px;">
+    {% if name == "conference" %}
+      Conference: QF (GW30 / GW32) → SF → Final. QF and SF are two-legged ties; the Final is a single match on GW38.
+    {% else %}
+      {{ title }}: R16 → QF → SF → Final. R16, QF and SF are two-legged ties; the Final is a single match on GW38.
+    {% endif %}
+  </p>
+</section>
+{% endif %}
+
+{% endblock %}

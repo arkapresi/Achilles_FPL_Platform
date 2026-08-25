@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ title or 'Achilles FPL Platform' }}</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <div class="brand">🏆 Achilles FPL</div>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/weekly-update">Weekly Update</a>
+    <a href="/league">League</a>
+    <a href="/competitions/analytics">Analytics</a>
+    <a href="/competitions/comparison">Comparison</a>
+    <a href="/competitions/lms">LMS</a>
+    <a href="/competitions/european">European Championship</a>
+    <a href="/competitions/ucl">UCL</a>
+    <a href="/competitions/europa">Europa</a>
+    <a href="/competitions/conference">Conference</a>
+    <a href="/competitions/prizes">Prizes</a>
+    <a href="/admin">Admin</a>
+  </nav>
+</header>
+
+<main>{% block content %}{% endblock %}</main>
+
+<footer>Independent Achilles platform • {{ s.season }} • {{ s.expected_managers }} managers</footer>
+</body>
+</html>

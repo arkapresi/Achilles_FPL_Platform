@@ -1,0 +1,328 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+  .hero {
+    margin-bottom: 28px;
+  }
+
+  .hero-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 6px 0 8px;
+  }
+
+  .hero-title h1 {
+    margin: 0;
+  }
+
+  .hero-trophy {
+    font-size: 34px;
+  }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 0 0 30px;
+  }
+
+  .kpi {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 5px 18px rgba(15, 23, 42, .06);
+  }
+
+  .kpi-label {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    color: #687386;
+    margin-bottom: 8px;
+  }
+
+  .kpi-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: #172033;
+    line-height: 1.1;
+  }
+
+  .kpi-sub {
+    margin-top: 7px;
+    color: #526074;
+    font-size: 14px;
+  }
+
+  .panel {
+    background: #fff;
+    border-radius: 16px;
+    padding: 22px;
+    box-shadow: 0 5px 18px rgba(15, 23, 42, .06);
+    margin-bottom: 30px;
+  }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 18px;
+  }
+
+  .section-head h2 {
+    margin: 4px 0 0;
+  }
+
+  .eyebrow {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    color: #687386;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+  }
+
+  .table-wrap table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .table-wrap th {
+    text-align: left;
+    padding: 12px 10px;
+    font-size: 12px;
+    letter-spacing: .06em;
+    color: #687386;
+    border-bottom: 1px solid #e5e9ef;
+  }
+
+  .table-wrap td {
+    padding: 13px 10px;
+    border-bottom: 1px solid #e5e9ef;
+    color: #172033;
+  }
+
+  .table-wrap tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .table-wrap a {
+    color: inherit;
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 16px;
+    border-radius: 9px;
+    background: #172033;
+    color: #fff !important;
+    text-decoration: none;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .competition-title {
+    margin: 0 0 16px;
+  }
+
+  .competition-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-bottom: 30px;
+  }
+
+  .competition-tile {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 135px;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #e5e9ef;
+    border-radius: 16px;
+    text-decoration: none;
+    color: #172033;
+    box-shadow: 0 5px 18px rgba(15, 23, 42, .05);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+
+  .competition-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 9px 24px rgba(15, 23, 42, .10);
+  }
+
+  .competition-icon {
+    font-size: 24px;
+  }
+
+  .competition-name {
+    font-size: 17px;
+    font-weight: 800;
+  }
+
+  .competition-description {
+    color: #687386;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  @media (max-width: 1000px) {
+    .kpi-grid,
+    .competition-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .kpi-grid,
+    .competition-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .section-head {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>
+
+<section class="hero">
+  <p class="eyebrow">{{ s.season }}</p>
+
+  <div class="hero-title">
+    <span class="hero-trophy">🏆</span>
+    <h1>{{ league_name }}</h1>
+  </div>
+
+  <p>Achilles FPL Platform • {{ s.expected_managers }} managers</p>
+</section>
+
+{% if error %}
+<div class="alert">FPL API unavailable right now: {{ error }}</div>
+{% endif %}
+
+<section class="kpi-grid">
+  <div class="kpi">
+    <div class="kpi-label">CURRENT GAMEWEEK</div>
+    <div class="kpi-value">{{ s.current_gw_name if s.current_gw_name else 'GW' ~ (s.current_gw or '—') }}</div>
+  </div>
+
+  <div class="kpi">
+    <div class="kpi-label">HIGHEST GW SCORE</div>
+    <div class="kpi-value">{{ s.highest if s.highest is not none else '—' }}</div>
+    {% if s.gw_winner %}
+    <div class="kpi-sub">{{ s.gw_winner.player_name }}</div>
+    {% endif %}
+  </div>
+
+  <div class="kpi">
+    <div class="kpi-label">LOWEST GW SCORE</div>
+    <div class="kpi-value">{{ s.lowest if s.lowest is not none else '—' }}</div>
+    {% if s.lowest_manager %}
+    <div class="kpi-sub">{{ s.lowest_manager.player_name }}</div>
+    {% endif %}
+  </div>
+
+  <div class="kpi">
+    <div class="kpi-label">MANAGERS</div>
+    <div class="kpi-value">{{ standings|length }} / {{ s.expected_managers }}</div>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">CLASSIC LEAGUE</p>
+      <h2>Current Standings</h2>
+    </div>
+
+    <a class="button" href="/league">View Full League →</a>
+  </div>
+
+  {% if standings %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>RANK</th>
+          <th>MANAGER</th>
+          <th>GW</th>
+          <th>TOTAL</th>
+          <th>OVERALL RANK</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for r in standings[:10] %}
+        <tr>
+          <td>{{ r.rank }}</td>
+          <td>
+            <a href="/manager/{{ r.entry }}">
+              <b>{{ r.player_name }}</b>
+            </a>
+          </td>
+          <td>{{ r.event_total }}</td>
+          <td>{{ r.total }}</td>
+          <td>
+            {% if r.overall_rank %}
+              {{ "{:,}".format(r.overall_rank) }}
+            {% else %}
+              —
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <p>No FPL data loaded yet.</p>
+  {% endif %}
+</section>
+
+<h2 class="competition-title">Competition Hubs</h2>
+
+<section class="competition-grid">
+
+  <a class="competition-tile" href="/competitions/lms">
+    <span class="competition-icon">☠️</span>
+    <span class="competition-name">Last Man Standing</span>
+    <span class="competition-description">Full elimination history and tie-breaks</span>
+  </a>
+
+  <a class="competition-tile" href="/competitions/european">
+    <span class="competition-icon">🏆</span>
+    <span class="competition-name">European Qualifiers</span>
+    <span class="competition-description">8 groups, group stage and qualification</span>
+  </a>
+
+  <a class="competition-tile" href="/competitions/ucl">
+    <span class="competition-icon">🏆</span>
+    <span class="competition-name">Champions League</span>
+    <span class="competition-description">Knockout phase</span>
+  </a>
+
+  <a class="competition-tile" href="/competitions/europa">
+    <span class="competition-icon">🟢</span>
+    <span class="competition-name">Europa League</span>
+    <span class="competition-description">Knockout phase</span>
+  </a>
+
+  <a class="competition-tile" href="/competitions/conference">
+    <span class="competition-icon">🔵</span>
+    <span class="competition-name">Conference League</span>
+    <span class="competition-description">Knockout phase</span>
+  </a>
+
+</section>
+
+{% endblock %}
