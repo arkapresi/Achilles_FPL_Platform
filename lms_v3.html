@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+    <p class="eyebrow">ACHILLES 8.0 • LAST MAN STANDING</p>
+    <h1>☠️ Last Man Standing</h1>
+    <p>One manager is eliminated in every available Gameweek from GW1 onward, based on Net Score and the Achilles LMS tie-break hierarchy.</p>
+</section>
+
+{% if error %}
+<section class="panel">
+    <div class="alert">{{ error }}</div>
+</section>
+{% endif %}
+
+{% if message %}
+<section class="panel">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">STATUS</p>
+            <h2>{% if current_finished %}LMS status{% else %}LMS not ready yet{% endif %}</h2>
+        </div>
+    </div>
+    <p><strong>{{ message }}</strong></p>
+    {% if survivors %}
+    <p><strong>{{ survivors|length }}</strong> managers currently remain in the LMS pool.</p>
+    {% endif %}
+</section>
+{% endif %}
+
+{% if started %}
+<section class="metric-grid">
+    <div class="metric-card">
+        <span>Current GW</span>
+        <strong>GW{{ current_gw or "—" }}</strong>
+    </div>
+    <div class="metric-card">
+        <span>Eliminated</span>
+        <strong>{{ rows|length }}</strong>
+    </div>
+    <div class="metric-card">
+        <span>Managers Left</span>
+        <strong>{{ survivors|length }}</strong>
+    </div>
+    <div class="metric-card">
+        <span>Finalists</span>
+        <strong>{{ "Locked" if survivors|length == 2 else "Pending" }}</strong>
+    </div>
+</section>
+
+{% if started and current_gw and not current_finished %}
+<section class="panel">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">CURRENT GAMEWEEK</p>
+            <h2>GW{{ current_gw }} — LMS not ready yet</h2>
+        </div>
+    </div>
+    <p class="muted">The LMS elimination for GW{{ current_gw }} will be calculated only after all matches are completed. No provisional elimination is made while the Gameweek is live.</p>
+</section>
+{% endif %}
+
+<section class="panel">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">ELIMINATION HISTORY</p>
+            <h2>Weekly Eliminations</h2>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>GW</th>
+                    <th>Player Eliminated</th>
+                    <th>GW Position</th>
+                    <th>GW Points</th>
+                    <th>Net Score</th>
+                    <th>Reason for Elimination</th>
+                    <th>Players Left</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for row in rows %}
+                <tr>
+                    <td><strong>GW{{ row.gw }}</strong></td>
+                    <td><b>{{ row.player_name }}</b>{% if row.entry_name %}<br><span class="muted">{{ row.entry_name }}</span>{% endif %}</td>
+                    <td>{{ row.position }}</td>
+                    <td>{{ row.gw_points }}</td>
+                    <td><b>{{ row.net_score }}</b></td>
+                    <td>{{ row.reason }}</td>
+                    <td>{{ row.survivors_after }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="panel">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">SURVIVORS</p>
+            <h2>Managers Still Alive</h2>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Manager</th>
+                    <th>Team</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for player in survivors %}
+                <tr>
+                    <td><b>{{ player.player_name }}</b></td>
+                    <td>{{ player.entry_name or "—" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endif %}
+
+<section class="panel">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">TIE-BREAK HIERARCHY</p>
+            <h2>How ties are resolved</h2>
+        </div>
+    </div>
+    <ol>
+        <li>Most goals scored in the GW</li>
+        <li>Most assists in the GW</li>
+        <li>Most clean sheets in the GW</li>
+        <li>Most bonus points in the GW</li>
+        <li>Fewer yellow cards in the GW</li>
+        <li>Fewer red cards in the GW</li>
+        <li>Most captaincy points in the GW</li>
+        <li>Most vice-captaincy points in the GW</li>
+        <li>Lowest negative transfer impact / lowest transfer cost</li>
+    </ol>
+    <p class="muted">LMS Net Score = GW Points − Transfer Cost.</p>
+</section>
+{% endblock %}

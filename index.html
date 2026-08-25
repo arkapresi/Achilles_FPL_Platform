@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">{{ s.season }}</p>
+  <h1>{{ league_name }}</h1>
+  <p>Achilles FPL platform • {{ s.expected_managers }} managers</p>
+</section>
+
+{% if error %}
+<div class="alert">FPL API unavailable right now: {{ error }}</div>
+{% endif %}
+
+<section class="panel">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">CLASSIC LEAGUE</p>
+      <h2>Current Standings</h2>
+    </div>
+    <a class="button" href="/league">View Full League →</a>
+  </div>
+
+  {% if standings %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>RANK</th>
+          <th>MANAGER</th>
+          <th>GW</th>
+          <th>TOTAL</th>
+          <th>OVERALL RANK</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in standings[:10] %}
+        <tr>
+          <td>{{ r.rank }}</td>
+          <td>
+            <a href="/manager/{{ r.entry }}">
+              <b>{{ r.player_name }}</b>
+            </a>
+          </td>
+          <td>{{ r.event_total }}</td>
+          <td>{{ r.total }}</td>
+          <td>
+            {% if r.overall_rank is not none %}
+              {{ "{:,}".format(r.overall_rank) }}
+            {% else %}
+              —
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <p>No FPL data loaded yet.</p>
+  {% endif %}
+</section>
+
+<section class="grid">
+  <a class="tile" href="/competitions/lms">
+    ☠️
+    <b>Last Man Standing</b>
+    <span>Full elimination history and tie-breaks</span>
+  </a>
+
+  <a class="tile" href="/competitions/european">
+    🏆
+    <b>European Qualifiers</b>
+    <span>8 groups, group stage and qualification</span>
+  </a>
+
+  <a class="tile" href="/competitions/ucl">
+    🏆
+    <b>Champions League</b>
+    <span>Knockout phase</span>
+  </a>
+
+  <a class="tile" href="/competitions/europa">
+    🟢
+    <b>Europa League</b>
+    <span>Knockout phase</span>
+  </a>
+
+  <a class="tile" href="/competitions/conference">
+    🔵
+    <b>Conference League</b>
+    <span>Knockout phase</span>
+  </a>
+</section>
+{% endblock %}

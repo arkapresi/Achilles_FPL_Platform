@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="hero">
+    <p class="eyebrow">2026/27</p>
+    <h1>Manager Comparison</h1>
+    <p>Compare up to 10 Achilles FPL managers across Gameweeks.</p>
+</section>
+
+<section class="panel">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">SELECTION</p>
+            <h2>Select Managers</h2>
+        </div>
+        <a class="button" href="/league">← League</a>
+    </div>
+
+    {% if error %}
+        <div class="alert">{{ error }}</div>
+    {% endif %}
+
+    <form method="get" action="/competitions/comparison">
+        <div style="display:grid;grid-template-columns:1fr 220px auto;gap:16px;align-items:end;">
+            <div>
+                <label for="managers"><b>Managers (select 2–10)</b></label>
+                <select id="managers" name="managers" multiple size="10" style="width:100%;padding:10px;border:1px solid #d8dde8;border-radius:10px;background:white;">
+                    {% for m in manager_options %}
+                        <option value="{{ m.entry_id }}" {% if m.entry_id in selected_ids %}selected{% endif %}>
+                            {{ m.rank or '—' }} · {{ m.name }}{% if m.team %} — {{ m.team }}{% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+                <small>Hold Command on Mac while clicking to select multiple managers.</small>
+            </div>
+
+            <div>
+                <label for="gw"><b>Gameweek</b></label>
+                <select id="gw" name="gw" style="width:100%;padding:11px;border:1px solid #d8dde8;border-radius:10px;background:white;">
+                    {% for event in available_gws %}
+                        <option value="{{ event }}" {% if event == selected_gw %}selected{% endif %}>GW{{ event }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button class="button" type="submit">Compare</button>
+        </div>
+    </form>
+</section>
+
+{% if comparison and comparison.managers|length >= 2 %}
+
+<section class="metric-grid">
+    {% for m in comparison.managers %}
+    <div class="metric-card">
+        <span>{{ m.name }}</span>
+        <strong>{{ m.gw_points }}</strong>
+        <small>GW{{ comparison.selected_gw }} gross · Net {{ m.gw_points - m.transfer_cost }}</small>
+    </div>
+    {% endfor %}
+</section>
+
+<section class="panel">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">GAMEWEEK NET SCORES</p>
+            <h2>GW-by-GW Comparison</h2>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>GW</th>
+                    {% for m in comparison.managers %}
+                        <th>{{ m.name }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in comparison.matrix %}
+                <tr>
+                    <td><b>GW{{ row.gw }}</b></td>
+                    {% for m in comparison.managers %}
+                        <td><b>{{ row[m.name] }}</b></td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="panel">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">GW{{ comparison.selected_gw }} DETAIL</p>
+            <h2>Manager Metrics</h2>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Manager</th>
+                    <th>Rank</th>
+                    <th>GW Gross</th>
+                    <th>Transfer Cost</th>
+                    <th>GW Net</th>
+                    <th>Overall Points</th>
+                    <th>Overall Rank</th>
+                    <th>Transfers</th>
+                    <th>Goals</th>
+                    <th>Assists</th>
+                    <th>CS</th>
+                    <th>Bonus</th>
+                    <th>Captain</th>
+                    <th>Bench</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in comparison.managers %}
+                <tr>
+                    <td><b>{{ m.name }}</b><br><small>{{ m.team }}</small></td>
+                    <td>{{ m.rank or '—' }}</td>
+                    <td><b>{{ m.gw_points }}</b></td>
+                    <td>{{ m.transfer_cost }}</td>
+                    <td><b>{{ m.gw_points - m.transfer_cost }}</b></td>
+                    <td>{{ m.overall_points }}</td>
+                    <td>{{ "{:,}".format(m.overall_rank) if m.overall_rank else "—" }}</td>
+                    <td>{{ m.transfers }}</td>
+                    <td>{{ m.metrics.goals }}</td>
+                    <td>{{ m.metrics.assists }}</td>
+                    <td>{{ m.metrics.clean_sheets }}</td>
+                    <td>{{ m.metrics.bonus }}</td>
+                    <td>{{ m.metrics.captain_points }}</td>
+                    <td>{{ m.metrics.bench_points }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="panel">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">PLAYER DETAIL</p>
+            <h2>GW{{ comparison.selected_gw }} Squad Scores</h2>
+        </div>
+    </div>
+
+    {% for m in comparison.managers %}
+        <h3>{{ m.name }}{% if m.team %} · {{ m.team }}{% endif %}</h3>
+        <div class="table-wrap" style="margin-bottom:24px;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Player</th><th>Pos</th><th>GW Points</th><th>Effective</th>
+                        <th>Minutes</th><th>Goals</th><th>Assists</th><th>CS</th><th>Bonus</th><th>Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in m.players %}
+                    <tr>
+                        <td><b>{{ p.name }}</b></td>
+                        <td>{{ p.position }}</td>
+                        <td>{{ p.points }}</td>
+                        <td><b>{{ p.effective }}</b></td>
+                        <td>{{ p.minutes }}</td>
+                        <td>{{ p.goals }}</td>
+                        <td>{{ p.assists }}</td>
+                        <td>{{ p.clean_sheets }}</td>
+                        <td>{{ p.bonus }}</td>
+                        <td>
+                            {% if p.captain %}C{% elif p.vice %}VC{% elif p.bench %}Bench{% else %}XI{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endfor %}
+</section>
+
+{% elif selected_ids|length == 1 %}
+<section class="panel">
+    <div class="alert">Select at least 2 managers to compare.</div>
+</section>
+{% endif %}
+
+{% endblock %}

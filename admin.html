@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">Platform Configuration</p>
+  <h1>⚙️ Admin</h1>
+  <p>Change league settings without editing application code.</p>
+</section>
+
+{% if saved %}
+<div class="alert">Settings saved successfully.</div>
+{% endif %}
+
+<section class="panel">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Configuration</p>
+      <h2>League Settings</h2>
+    </div>
+  </div>
+
+  <form method="post" action="/admin">
+    <div class="form-grid">
+
+      <div>
+        <label>League ID</label>
+        <input
+          type="text"
+          name="league_id"
+          value="{{ s.league_id }}"
+          required
+        >
+      </div>
+
+      <div>
+        <label>Season</label>
+        <input
+          type="text"
+          name="season"
+          value="{{ s.season }}"
+          required
+        >
+      </div>
+
+      <div>
+        <label>Expected Managers</label>
+        <input
+          type="number"
+          name="expected_managers"
+          value="{{ s.expected_managers }}"
+          min="1"
+          required
+        >
+      </div>
+
+      <div>
+        <label>Entry Fee</label>
+        <input
+          type="number"
+          name="entry_fee"
+          value="{{ s.entry_fee }}"
+          min="0"
+          required
+        >
+      </div>
+
+    </div>
+
+    <br>
+
+    <button class="button" type="submit">
+      Save Settings
+    </button>
+  </form>
+</section>
+
+<section class="panel">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Competition Setup</p>
+      <h2>Enabled Competitions</h2>
+    </div>
+  </div>
+
+  <ul>
+    <li>Gameweek Prizes: {{ 'Enabled' if s.competitions.gameweek_prizes else 'Disabled' }}</li>
+    <li>Last Man Standing: {{ 'Enabled' if s.competitions.last_man_standing else 'Disabled' }}</li>
+    <li>Manager of the Month: {{ 'Enabled' if s.competitions.manager_of_the_month else 'Disabled' }}</li>
+    <li>Champions League: {{ 'Enabled' if s.competitions.champions_league else 'Disabled' }}</li>
+    <li>Europa League: {{ 'Enabled' if s.competitions.europa_league else 'Disabled' }}</li>
+    <li>Conference League: {{ 'Enabled' if s.competitions.conference_league else 'Disabled' }}</li>
+  </ul>
+</section>
+{% endblock %}

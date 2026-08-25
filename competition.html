@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">{{ s.season }}</p>
+  <h1>{{ title }}</h1>
+  <p>Achilles FPL competition module</p>
+</section>
+
+<section class="panel">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Competition</p>
+      <h2>{{ title }}</h2>
+    </div>
+  </div>
+
+  {% if name == 'analytics' %}
+    <p>Analytics will show league performance metrics, including highest and lowest scorers.</p>
+
+  {% elif name == 'comparison' %}
+    <p>Manager Comparison will allow comparison of up to 6 managers across selected gameweeks.</p>
+
+  {% elif name == 'lms' %}
+    <p>Last Man Standing competition.</p>
+
+  {% elif name == 'motm' %}
+    <p>Manager of the Month competition.</p>
+
+  {% elif name == 'ucl' %}
+    <p>Champions League competition.</p>
+
+  {% elif name == 'europa' %}
+    <p>Europa League competition.</p>
+
+  {% elif name == 'conference' %}
+    <p>Conference League competition.</p>
+
+  {% elif name == 'prizes' %}
+    <p>Competition prizes and prize tracking.</p>
+
+  {% else %}
+    <p>This competition module is ready for configuration.</p>
+  {% endif %}
+</section>
+{% endblock %}

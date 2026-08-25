@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+  .prize-hero { margin-bottom: 24px; }
+  .prize-hero h1 { margin-bottom: 8px; }
+  .prize-hero p { margin: 0; color: #687386; }
+  .prize-alert { padding: 14px 16px; border-radius: 10px; background: #fff4e5; border: 1px solid #f2d4a6; color: #7a4a00; margin-bottom: 20px; }
+  .prize-summary { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:14px; margin-bottom:24px; }
+  .prize-kpi { background:#fff; border:1px solid #e5e9ef; border-radius:14px; padding:18px; box-shadow:0 5px 18px rgba(15,23,42,.05); }
+  .prize-kpi-label { font-size:11px; font-weight:800; letter-spacing:.07em; color:#687386; }
+  .prize-kpi-value { font-size:24px; font-weight:800; margin-top:6px; color:#172033; }
+  .prize-panel { background:#fff; border:1px solid #e5e9ef; border-radius:16px; padding:22px; margin-bottom:22px; box-shadow:0 5px 18px rgba(15,23,42,.05); }
+  .prize-head { display:flex; justify-content:space-between; align-items:center; gap:20px; margin-bottom:18px; }
+  .prize-head h2 { margin:0; }
+  .prize-head p { margin:4px 0 0; color:#687386; }
+  .prize-form { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:18px; }
+  .prize-form label { font-weight:700; }
+  .prize-form select { min-width:180px; padding:9px 12px; border:1px solid #d8dee8; border-radius:8px; background:#fff; font:inherit; }
+  .prize-form button { padding:9px 15px; border:0; border-radius:8px; background:#172033; color:#fff; font-weight:700; cursor:pointer; }
+  .prize-table-wrap { overflow-x:auto; }
+  .prize-table { width:100%; border-collapse:collapse; min-width:620px; }
+  .prize-table th { text-align:left; padding:11px 10px; font-size:12px; color:#687386; letter-spacing:.05em; border-bottom:1px solid #e5e9ef; }
+  .prize-table td { padding:12px 10px; border-bottom:1px solid #edf0f4; color:#172033; }
+  .prize-table tr:last-child td { border-bottom:0; }
+  .prize-money { font-weight:800; white-space:nowrap; }
+  .pending { color:#687386; font-style:italic; }
+  .competition-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+  .competition-box { border:1px solid #e5e9ef; border-radius:12px; padding:16px; background:#fafbfd; }
+  .competition-box h3 { margin:0 0 12px; }
+  .status-note { margin-top:12px; font-size:13px; color:#687386; }
+  .earnings-wrap { overflow:auto; max-height:650px; }
+  .earnings-table { min-width:1600px; }
+  .earnings-table th, .earnings-table td { white-space:nowrap; text-align:center; }
+  .earnings-table th:first-child, .earnings-table td:first-child { position:sticky; left:0; background:#fff; text-align:left; z-index:2; }
+  .earnings-table th:first-child { z-index:3; }
+  .zero { color:#a0a8b5; }
+  .note { font-size:13px; color:#687386; margin-top:12px; }
+  @media (max-width: 1050px) { .prize-summary { grid-template-columns:repeat(2,minmax(0,1fr)); } .competition-grid { grid-template-columns:1fr; } }
+  @media (max-width: 600px) { .prize-summary { grid-template-columns:1fr; } .prize-head { align-items:flex-start; flex-direction:column; } }
+</style>
+
+<section class="prize-hero">
+  <p class="eyebrow">ACHILLES 8.0 • PRIZE CENTRE</p>
+  <h1>Prizes & Payouts</h1>
+  <p>Entry fee ₹{{ "{:,}".format(totals.entry_fee) }} • {{ totals.participants }} participants • Total pot ₹{{ "{:,}".format(totals.pot) }}</p>
+</section>
+
+{% if error %}<div class="prize-alert">Prize data could not be fully loaded: {{ error }}</div>{% endif %}
+
+<section class="prize-summary">
+  <div class="prize-kpi"><div class="prize-kpi-label">ENTRY FEE</div><div class="prize-kpi-value">₹{{ "{:,}".format(totals.entry_fee) }}</div></div>
+  <div class="prize-kpi"><div class="prize-kpi-label">PARTICIPANTS</div><div class="prize-kpi-value">{{ totals.participants }}</div></div>
+  <div class="prize-kpi"><div class="prize-kpi-label">GW PRIZES</div><div class="prize-kpi-value">₹{{ "{:,}".format(totals.gw) }}</div></div>
+  <div class="prize-kpi"><div class="prize-kpi-label">END-SEASON PRIZES</div><div class="prize-kpi-value">₹{{ "{:,}".format(totals.lms + totals.motm + totals.europe + totals.final) }}</div></div>
+  <div class="prize-kpi"><div class="prize-kpi-label">TOTAL POT</div><div class="prize-kpi-value">₹{{ "{:,}".format(totals.pot) }}</div></div>
+</section>
+
+<section class="prize-panel">
+  <div class="prize-head"><div><h2>💰 Payout Allocation</h2><p>The payout structure follows the individual amounts shown in the Achilles 8.0 rulebook.</p></div></div>
+  <div class="prize-table-wrap"><table class="prize-table"><thead><tr><th>COMPETITION</th><th>OUTFLOW</th></tr></thead><tbody>
+    <tr><td>Gameweek Prizes — 38 GWs × ₹590</td><td class="prize-money">₹22,420</td></tr>
+    <tr><td>Last Man Standing</td><td class="prize-money">₹4,300</td></tr>
+    <tr><td>Manager of the Month — 9 × ₹380</td><td class="prize-money">₹3,420</td></tr>
+    <tr><td>UCL + Europa + Conference + 8 Group Winners</td><td class="prize-money">₹9,100</td></tr>
+    <tr><td>Final League Standing — Top 10</td><td class="prize-money">₹28,760</td></tr>
+    <tr><td><b>TOTAL OUTFLOW</b></td><td class="prize-money"><b>₹68,000</b></td></tr>
+  </tbody></table></div>
+  <p class="note">Entry fee ₹1,700 × 40 participants = ₹68,000.</p>
+</section>
+
+<section class="prize-panel">
+  <div class="prize-head">
+    <div><h2>🏆 Gameweek Prizes</h2><p>Top 5 managers by Net Score. Tie-breaks are applied exactly in the rulebook order.</p></div>
+  </div>
+  <form class="prize-form" method="get" action="/competitions/prizes">
+    <label for="gw">Select Gameweek</label>
+    <select id="gw" name="gw">
+      {% for g in available_gws %}<option value="{{ g }}" {% if g == selected_gw %}selected{% endif %}>GW{{ g }}</option>{% endfor %}
+    </select>
+    <button type="submit">View GW</button>
+  </form>
+  {% if gw_rows %}
+  <div class="prize-table-wrap"><table class="prize-table">
+    <thead><tr><th>POSITION</th><th>MANAGER</th><th>GW SCORE</th><th>TRANSFER COST</th><th>NET SCORE</th><th>PRIZE</th></tr></thead>
+    <tbody>{% for r in gw_rows %}<tr><td>{{ r.rank }}</td><td><a href="/manager/{{ r.entry }}"><b>{{ r.player_name }}</b></a></td><td>{{ r.gw_score }}</td><td>{{ r.transfer_cost }}</td><td><b>{{ r.net_score }}</b></td><td class="prize-money">₹{{ "{:,}".format(r.prize) }}</td></tr>{% endfor %}</tbody>
+  </table></div>
+  {% else %}<p class="pending">No completed data is available for the selected Gameweek yet.</p>{% endif %}
+  <p class="note">GW prize pool: ₹590 per Gameweek × 38 = ₹22,420.</p>
+</section>
+
+<section class="prize-panel">
+  <div class="prize-head"><div><h2>👑 Manager of the Month</h2><p>Standalone monthly competition based on cumulative Net Score.</p></div></div>
+  <form class="prize-form" method="get" action="/competitions/prizes">
+    <label for="period">Select Period</label>
+    <select id="period" name="period">
+      {% for p in motm_results %}<option value="{{ loop.index }}" {% if loop.index == selected_period %}selected{% endif %}>{{ p.period }} — {{ p.gw_range }}</option>{% endfor %}
+    </select>
+    <button type="submit">View Period</button>
+  </form>
+  {% set selected_motm = motm_results[selected_period - 1] if motm_results and selected_period >= 1 and selected_period <= motm_results|length else None %}
+  {% if selected_motm %}
+  <div class="prize-table-wrap"><table class="prize-table"><thead><tr><th>PERIOD</th><th>GAMEWEEKS</th><th>STATUS</th><th>MANAGER</th><th>NET SCORE</th><th>PRIZE</th></tr></thead>
+  <tbody><tr><td>{{ selected_motm.period }}</td><td>{{ selected_motm.gw_range }}</td><td>{{ selected_motm.status }}</td><td>{% if selected_motm.winner %}<b>{{ selected_motm.winner }}</b>{% else %}—{% endif %}</td><td>{% if selected_motm.net_score is not none %}{{ selected_motm.net_score }}{% else %}—{% endif %}</td><td class="prize-money">₹{{ "{:,}".format(380) }}</td></tr></tbody></table></div>
+  {% endif %}
+  <p class="note">Nine periods × ₹380 = ₹3,420. A manager may win multiple months.</p>
+  <div class="prize-table-wrap"><table class="prize-table"><thead><tr><th>PERIOD</th><th>GAMEWEEKS</th><th>STATUS</th><th>WINNER / LEADER</th><th>PRIZE</th></tr></thead><tbody>
+    {% for p in motm_results %}<tr><td>{{ p.period }}</td><td>{{ p.gw_range }}</td><td>{{ p.status }}</td><td>{% if p.winner %}{{ p.winner }}{% else %}—{% endif %}</td><td class="prize-money">₹380</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+
+<section class="prize-panel">
+  <div class="prize-head"><div><h2>☠️ Last Man Standing</h2><p>Final top 6 are paid at the end of the season.</p></div></div>
+  <div class="prize-table-wrap"><table class="prize-table"><thead><tr><th>FINAL POSITION</th><th>MANAGER</th><th>PRIZE</th></tr></thead><tbody>
+    {% for r in lms_prizes %}<tr><td>{{ r.rank }}</td><td class="pending">Pending — decided after GW38</td><td class="prize-money">₹{{ "{:,}".format(r.prize) }}</td></tr>{% endfor %}
+  </tbody></table></div>
+  <p class="note">LMS total prize pool: ₹4,300.</p>
+</section>
+
+<section class="prize-panel">
+  <div class="prize-head"><div><h2>🌍 European Competitions</h2><p>Separate prize structures for Champions League, Europa League and Conference League.</p></div></div>
+  <div class="competition-grid">
+    <div class="competition-box"><h3>🏆 Champions League</h3><table class="prize-table"><tbody>{% for place, prize in euro_prizes["Champions League"].items() %}<tr><td>{{ place }}</td><td class="pending">Pending — GW38</td><td class="prize-money">₹{{ "{:,}".format(prize) }}</td></tr>{% endfor %}</tbody></table></div>
+    <div class="competition-box"><h3>🟢 Europa League</h3><table class="prize-table"><tbody>{% for place, prize in euro_prizes["Europa League"].items() %}<tr><td>{{ place }}</td><td class="pending">Pending — GW38</td><td class="prize-money">₹{{ "{:,}".format(prize) }}</td></tr>{% endfor %}</tbody></table></div>
+    <div class="competition-box"><h3>🔵 Conference League</h3><table class="prize-table"><tbody>{% for place, prize in euro_prizes["Conference League"].items() %}<tr><td>{{ place }}</td><td class="pending">Pending — GW38</td><td class="prize-money">₹{{ "{:,}".format(prize) }}</td></tr>{% endfor %}</tbody></table></div>
+  </div>
+  <div class="competition-box" style="margin-top:16px"><h3>European Group Winners</h3><p>8 group winners × ₹{{ euro_group_prize }} = ₹1,200.</p><table class="prize-table"><tbody>{% for i in range(1,9) %}<tr><td>Group {{ "ABCDEFGH"[i-1] }}</td><td class="pending">Pending — group stage</td><td class="prize-money">₹150</td></tr>{% endfor %}</tbody></table></div>
+  <p class="note">Combined UCL / Europa / Conference outflow: ₹9,100.</p>
+</section>
+
+<section class="prize-panel">
+  <div class="prize-head"><div><h2>🏁 Final League Standing</h2><p>Top 10 after GW38. Current rows are provisional until the season is complete.</p></div></div>
+  <div class="prize-table-wrap"><table class="prize-table"><thead><tr><th>RANK</th><th>MANAGER</th><th>TEAM</th><th>POINTS</th><th>PRIZE</th></tr></thead><tbody>
+    {% for r in final_rows %}<tr><td>{{ r.rank }}</td><td><b>{{ r.player_name }}</b></td><td>{{ r.team_name }}</td><td>{{ r.total }}</td><td class="prize-money">₹{{ "{:,}".format(r.prize) }}</td></tr>{% endfor %}
+  </tbody></table></div>
+  <p class="note">The individual Final Standing payouts shown in the rulebook are used below. They total ₹28,760; together with the other competition pools this reconciles exactly to the ₹68,000 total pot.</p>
+</section>
+
+<section class="prize-panel">
+  <div class="prize-head"><div><h2>💰 Manager Payout Ledger</h2><p>GW1–GW38 plus Overall. Completed GW prizes and completed MOTM awards are included; end-of-season competitions are added once results are available.</p></div></div>
+  {% if earnings_rows %}
+  <div class="earnings-wrap"><table class="prize-table earnings-table"><thead><tr><th>MANAGER</th>{% for g in range(1,39) %}<th>GW{{ g }}</th>{% endfor %}<th>OVERALL</th></tr></thead><tbody>
+    {% for r in earnings_rows %}<tr><td><b>{{ r.manager }}</b></td>{% for g in range(1,39) %}<td class="{% if r['gw' ~ g] == 0 %}zero{% endif %}">{% if r['gw' ~ g] %}₹{{ "{:,}".format(r['gw' ~ g]) }}{% else %}—{% endif %}</td>{% endfor %}<td class="prize-money">₹{{ "{:,}".format(r.overall) }}</td></tr>{% endfor %}
+  </tbody></table></div>
+  {% else %}<p class="pending">No manager payout data is available yet.</p>{% endif %}
+</section>
+
+{% endblock %}

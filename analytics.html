@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if error %}
+<section class="hero">
+    <p class="eyebrow">ANALYTICS</p>
+    <h1>Unable to load analytics</h1>
+    <div class="alert">{{ error }}</div>
+    <a class="button" href="/league">← Back to League</a>
+</section>
+
+{% elif analytics %}
+
+<section class="hero">
+    <p class="eyebrow">ACHILLES 8.0 • PERFORMANCE ANALYTICS</p>
+    <h1>📈 Manager Analytics</h1>
+    <p>Track Gameweek performance and cumulative Achilles net points.</p>
+</section>
+
+<section class="panel">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">SELECT MANAGER</p>
+            <h2>{{ analytics.manager_name }}</h2>
+            <p>{{ analytics.team_name }}</p>
+        </div>
+
+        <form method="get" action="/analytics">
+            <select name="manager" onchange="this.form.submit()" style="min-width:260px;padding:12px 14px;border:1px solid #d8dee8;border-radius:10px;background:white;font-size:15px;">
+                {% for row in standings %}
+                    <option value="{{ row.entry }}" {% if row.entry == analytics.entry_id %}selected{% endif %}>
+                        {{ row.player_name }} — {{ row.entry_name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+</section>
+
+<section class="metric-grid">
+    <div class="metric-card">
+        <span>GW{{ analytics.current_gw }} Net Score</span>
+        <strong>{{ analytics.current_net }}</strong>
+    </div>
+    <div class="metric-card">
+        <span>Cumulative Net Points</span>
+        <strong>{{ analytics.cumulative_net }}</strong>
+    </div>
+    <div class="metric-card">
+        <span>Overall Points</span>
+        <strong>{{ analytics.overall_points }}</strong>
+    </div>
+    <div class="metric-card">
+        <span>Overall Rank</span>
+        <strong>{{ "{:,}".format(analytics.overall_rank) if analytics.overall_rank else "—" }}</strong>
+    </div>
+    <div class="metric-card">
+        <span>Achilles League Rank</span>
+        <strong>{{ analytics.manager_rank or "—" }}</strong>
+    </div>
+</section>
+
+<section class="panel">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">TREND</p>
+            <h2>Cumulative Net Points</h2>
+        </div>
+        <span class="badge">Net = GW Points − Transfer Cost</span>
+    </div>
+
+    {% if analytics.rows %}
+    <div style="overflow-x:auto;">
+        <svg viewBox="0 0 900 300" width="100%" height="300" role="img" aria-label="Cumulative net points by gameweek" style="min-width:650px;display:block;">
+            <line x1="42" y1="258" x2="858" y2="258" stroke="#d8dee8" stroke-width="1" />
+            <line x1="42" y1="42" x2="42" y2="258" stroke="#d8dee8" stroke-width="1" />
+
+            <polyline
+                points="{{ analytics.chart_points }}"
+                fill="none"
+                stroke="#18243a"
+                stroke-width="4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+
+            {% for r in analytics.rows %}
+                {% set idx = loop.index0 %}
+                {% set count = analytics.rows|length %}
+                {% if count == 1 %}
+                    {% set cx = 42 %}
+                {% else %}
+                    {% set cx = 42 + (idx / (count - 1)) * 816 %}
+                {% endif %}
+                {% set minv = analytics.chart_min %}
+                {% set maxv = analytics.chart_max %}
+                {% if maxv == minv %}
+                    {% set maxv = minv + 1 %}
+                {% endif %}
+                {% set cy = 42 + ((maxv - r.cumulative_net) / (maxv - minv)) * 216 %}
+
+                <circle cx="{{ '%.1f'|format(cx) }}" cy="{{ '%.1f'|format(cy) }}" r="5" fill="#ffffff" stroke="#18243a" stroke-width="3" />
+                <text x="{{ '%.1f'|format(cx) }}" y="283" text-anchor="middle" font-size="12" fill="#687386">GW{{ r.event }}</text>
+            {% endfor %}
+        </svg>
+    </div>
+    {% else %}
+        <p>No completed Gameweek data is available yet.</p>
+    {% endif %}
+</section>
+
+<section class="panel">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">GAMEWEEK DETAIL</p>
+            <h2>Performance History</h2>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>GW</th>
+                    <th>GW Points</th>
+                    <th>Transfer Cost</th>
+                    <th>Net Score</th>
+                    <th>Cumulative Net</th>
+                    <th>Overall Points</th>
+                    <th>Overall Rank</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in analytics.rows|reverse %}
+                <tr>
+                    <td><b>GW{{ row.event }}</b></td>
+                    <td>{{ row.gross_points }}</td>
+                    <td>{{ row.transfer_cost }}</td>
+                    <td><b>{{ row.net_points }}</b></td>
+                    <td><b>{{ row.cumulative_net }}</b></td>
+                    <td>{{ row.overall_points }}</td>
+                    <td>{{ "{:,}".format(row.overall_rank) if row.overall_rank else "—" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{% else %}
+<section class="hero">
+    <p class="eyebrow">ANALYTICS</p>
+    <h1>No analytics data</h1>
+    <a class="button" href="/league">← Back to League</a>
+</section>
+{% endif %}
+
+{% endblock %}
